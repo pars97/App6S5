@@ -1,0 +1,6 @@
+clear all 
+close all
+clc
+%% Approximation à 2 paramètres
+
+E5
