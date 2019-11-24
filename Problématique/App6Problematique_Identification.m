@@ -27,11 +27,13 @@ V_IniM       = 6100;                % Vitesse initiale du mandat en m/s
 Gamma_IniM   = deg2rad(-20.5);      % Angle gamma initial du mandat en °
 H_IniM       = 120000;              % Hauteur initiale du mandat en m
 Theta_IniM   = deg2rad(-80);        % Angle theta initial du mandat en °
+V_FinM       = [250 300]';           % Described below
 V_FinM1      = 250;                 % Vitesse maximale optimale finale du mandat en m/s
 V_FinM2      = 300;                 % Vitesse maximale finale du mandat en m/s
 H_FinM       = 10000;               % Hauteur du déploiment des parachutes (h finale) en m
 T_Lim        = 45;                  % Temps limite pour une force sur la capsule de plus de 2000N en s
 Theta_cmdLim = deg2rad(60);         % Angle maximale en absolue de la capsule en °
+B            = S_c*C_do/M_c;        % Paramètre Balistique constant (m^2/kg)
 
 %% Détermination des paramètre Hs et Po
 H_V_Trap = Temps(2)-Temps(1);
@@ -155,7 +157,84 @@ RMS_acc_rel = sqrt(1/N*sum(((acc_mes-Acc_approx)./acc_mes).^2))
 %H_FinM/V_FinM1/V_FinM2
 
 
-Delta_V_aero = V_FinM1 - sqrt(V_Mes_Trap_Vec.^2+2*Mu_mars*(1/(R_mars+H_FinM)-1./(R_mars+H_Mes_Trap_Vec)));
+%Step 1 - RAA  avec donées de russes
+
+V_RAA = V_IniR*exp(1/2*B*H_s*(Rho_approx-Rho_approx(1))/sin(Gamma_IniR));
+
+% plot(V_RAA,H_Mes_Trap_Vec/1000)
+% hold on
+% plot(V_Mes_Trap_Vec,H_Mes_Trap_Vec/1000)
+
+RMS_V_RAA = sqrt(1/N*sum(((V_RAA-V_Mes_Trap_Vec)./V_Mes_Trap_Vec).^2));
+
+% 
+H = linspace(H_IniM,H_FinM,11000);
+
+Rho_fin = Rho_0*exp(-H_FinM/H_s);
+Rho_ini = Rho_0*exp(-H_IniM/H_s);
+
+
+
+Delta_V_aero = V_FinM - sqrt(V_IniM^2+2*Mu_mars*(1/(R_mars+H_FinM)-1/(R_mars+H_IniM)));
+
+Gamma_ref = asin(1/2*B*H_s*(Rho_fin-Rho_ini)./(log(1+Delta_V_aero./V_IniM)));
+
+Rho_RAA = Rho_0*exp(-H/H_s);
+
+V_RAA = V_IniM*exp(1/2*B*H_s*((Rho_RAA-Rho_RAA(1))./sin(Gamma_ref)));
+
+Daero_gamma = 1/2*Rho_RAA.*V_RAA.^2*S_c*C_do;
+
+
+%% Newton raphson
+it1 = 0;
+h1 = H(10000);
+it2 = 0;
+h2 = H(5000);
+
+y1 = 1/2*Rho_0*exp(-h1/H_s)*S_c*C_do*(V_IniM*exp(1/2*B*H_s*((Rho_0*exp(-h1/H_s)-Rho_0*exp(-H(1)/H_s))./sin(Gamma_ref)))).^2-2000;
+dy1 = - (6*C_do*Rho_0^2*S_c*V_IniM^2*exp(-(12*H_s*(Rho_0*exp(-H(1)/H_s) - Rho_0*exp(-h1/H_s)))./(625*sin(Gamma_ref)))*exp(-(2*h1)/H_s))./(625*sin(Gamma_ref)) - (C_do*Rho_0*S_c*V_IniM^2*exp(-(12*H_s*(Rho_0*exp(-H(1)/H_s) - Rho_0*exp(-h1/H_s)))./(625*sin(Gamma_ref)))*exp(-h1/H_s))/(2*H_s);
+
+while abs(y1)>1e-8 & it1<500
+    h1 = h1 - y1./dy1;
+    y1 = 1/2*Rho_0*exp(-h1/H_s)*S_c*C_do.*(V_IniM*exp(1/2*B*H_s*((Rho_0*exp(-h1/H_s)-Rho_0*exp(-H(1)/H_s))./sin(Gamma_ref)))).^2-2000;
+    dy1 = - (6*C_do*Rho_0^2*S_c*V_IniM^2.*exp(-(12*H_s*(Rho_0.*exp(-H(1)/H_s) - Rho_0.*exp(-h1/H_s)))./(625*sin(Gamma_ref))).*exp(-(2*h1)/H_s))./(625*sin(Gamma_ref)) - (C_do*Rho_0*S_c*V_IniM^2.*exp(-(12*H_s*(Rho_0.*exp(-H(1)/H_s) - Rho_0.*exp(-h1/H_s)))./(625*sin(Gamma_ref))).*exp(-h1/H_s))/(2*H_s);
+    it1 = it1+1;
+end
+
+y2 = 1/2*Rho_0*exp(-h2/H_s)*S_c*C_do*(V_IniM*exp(1/2*B*H_s*((Rho_0*exp(-h2/H_s)-Rho_0*exp(-H(1)/H_s))./sin(Gamma_ref)))).^2-2000;
+dy2 = - (6*C_do*Rho_0^2*S_c*V_IniM^2*exp(-(12*H_s*(Rho_0*exp(-H(1)/H_s) - Rho_0*exp(-h2/H_s)))./(625*sin(Gamma_ref)))*exp(-(2*h2)/H_s))./(625*sin(Gamma_ref)) - (C_do*Rho_0*S_c*V_IniM^2*exp(-(12*H_s*(Rho_0*exp(-H(1)/H_s) - Rho_0*exp(-h2/H_s)))./(625*sin(Gamma_ref)))*exp(-h2/H_s))/(2*H_s);
+
+while abs(y2)>1e-8 & it2<500
+    h2 = h2 - y2./dy2;
+    y2 = 1/2*Rho_0*exp(-h2/H_s)*S_c*C_do.*(V_IniM*exp(1/2*B*H_s*((Rho_0*exp(-h2/H_s)-Rho_0*exp(-H(1)/H_s))./sin(Gamma_ref)))).^2-2000;
+    dy2 = - (6*C_do*Rho_0^2*S_c*V_IniM^2.*exp(-(12*H_s*(Rho_0.*exp(-H(1)/H_s) - Rho_0.*exp(-h2/H_s)))./(625*sin(Gamma_ref))).*exp(-(2*h2)/H_s))./(625*sin(Gamma_ref)) - (C_do*Rho_0*S_c*V_IniM^2.*exp(-(12*H_s*(Rho_0.*exp(-H(1)/H_s) - Rho_0.*exp(-h2/H_s)))./(625*sin(Gamma_ref))).*exp(-h2/H_s))/(2*H_s);
+    it2 = it2+1;
+end
+
+figure()
+hold on
+plot(H,Daero_gamma(1,:))
+xline(h1(1),':','color','red');
+xline(h2(1),':','color','red');
+yline(2000,':','color','red');
+
+figure()
+hold on
+plot(H,Daero_gamma(2,:))
+xline(h1(2),':','color','red');
+xline(h2(2),':','color','red');
+yline(2000,':','color','red');
+
+%%
+
+Hdot = sqrt(2*Daero_gamma./(Rho_0.*exp(-H/H_s).*S_c*C_do)).*sin(Gamma_ref);
+Hdot1_moy = mean(Hdot(1,(h1(1)/10:h2(1)/10)));
+Hdot2_moy = mean(Hdot(1,(h1(2)/10:h2(2)/10)));
+Dt_1 = (h1(1)-h2(1))/Hdot1_moy;
+Dt_2 = (h1(2)-h2(2))/Hdot2_moy;
+
+%% 
 
 
 
@@ -169,16 +248,6 @@ Delta_V_aero = V_FinM1 - sqrt(V_Mes_Trap_Vec.^2+2*Mu_mars*(1/(R_mars+H_FinM)-1./
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+disp('end')
 
 
