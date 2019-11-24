@@ -205,4 +205,4 @@ Dt_2 = (h1(2)-h2(2))/Hdot2_moy;
 
 disp('end')
 
-
+save App6Problematique_Identification H Rho_0 H_s
