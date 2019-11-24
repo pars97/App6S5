@@ -32,4 +32,3 @@ H_FinM       = 10000;               % Hauteur du déploiment des parachutes (h fi
 T_Lim        = 45;                  % Temps limite pour une force sur la capsule de plus de 2000N en s
 Theta_cmdLim = deg2rad(60);         % Angle maximale en absolue de la capsule en °
 B            = S_c*C_do/M_c;        % Paramètre Balistique constant (m^2/kg)
-disp('Constantes loaded')
