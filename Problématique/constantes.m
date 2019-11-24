@@ -1,4 +1,6 @@
 %% constantes
+addpath ../
+load('Accelero_Data_from_Moscow');
 %% Définition paramètres et données connues
 Temps        = t;                   % Temps des données des russes en s
 Acc_mes      = -acc_mes;            % Données des russes en m/s^2

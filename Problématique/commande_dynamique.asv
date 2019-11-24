@@ -1,0 +1,28 @@
+%% Commandes de la dynamique
+
+run constantes
+load ('App6Problematique_Identification.mat')
+rfin = (R_mars+H_FinM);
+Rho_fin = Rho_0*exp(-H_FinM/H_s);
+
+
+Rho = Rho_0*exp(-H/H_s);
+r = (R_mars+H);
+
+V(:,1) = V_IniM*exp(1/2*B*H_s*(Rho(1)-Rho(1))/sin(Gamma_IniM)); 
+V(:,2) = V_IniM*exp(1/2*B*H_s*(Rho(1)-Rho(1))/sin(Gamma_IniM)); 
+Delta_V_aero(:,1) = V_FinM-sqrt(V(1)^2+2*Mu_mars*(1/rfin-1/r(1)));
+theta_ref(:,1) = asin(1/2*B*H_s*(Rho_fin-Rho(1))./log(1+Delta_V_aero(:,1)./V(1)));
+%%
+for i = 2:1:length(H)
+
+V(:,i) = V_IniM*exp(1/2*B*H_s.*(Rho(i)-Rho(1))./sin(theta_ref(:,i))); 
+
+Delta_V_aero(:,i) = V_FinM-sqrt(V(:,i)^2+2*Mu_mars*(1/rfin-1/r(i)));
+theta_ref(:,1) = asin(1/2*B*H_s*(Rho_fin-Rho(i))./log(1+Delta_V_aero(:,1)./V(1)));
+end
+
+
+
+
+

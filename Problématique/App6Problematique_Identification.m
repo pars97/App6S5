@@ -1,8 +1,7 @@
 close all
 clear all
 clc
-addpath ../
-load('Accelero_Data_from_Moscow');
+
 run constantes
 %% Détermination des paramètre Hs et Po
 H_V_Trap = Temps(2)-Temps(1);
