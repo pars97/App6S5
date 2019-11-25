@@ -15,8 +15,12 @@
   reltol1 = 1e-02;
   options = odeset('abstol' ,1e-02, 'reltol', reltol1);
   [t, z] = ode45('ass', tspan, z0, options);
-hold on
+  [t1, z1] = ode45('ass1', tspan, z0, options);
+figure(45)
+  hold on
 plot(t,z(:,1))
+plot(t1,z1(:,1))
+figure(64)
 plot(t,z(:,3))
-yline(10000);
-legend('Vitesse','Hauteur')
+hold on
+plot(t1,z1(:,3))
