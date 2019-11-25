@@ -12,8 +12,8 @@
 
 % 1ère intégration avec paramètres nominaux
 
-  reltol1 = 1e-02;
-  options = odeset('abstol' ,1e-02, 'reltol', reltol1);
+  reltol1 = 1e-08;
+  options = odeset('abstol' ,1e-08, 'reltol', reltol1);
   [t, z] = ode45('ass', tspan, z0, options);
   [t1, z1] = ode45('ass1', tspan, z0, options);
 figure(45)
@@ -24,3 +24,5 @@ figure(64)
 plot(t,z(:,3))
 hold on
 plot(t1,z1(:,3))
+
+save Ode45Donnees250
