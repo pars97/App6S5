@@ -17,5 +17,16 @@
   [t, z] = ode45('ass', tspan, z0, options);
   %[t1, z1] = ode45('ass1', tspan, z0, options);
 figure
-plot(t,z(:,5))
-save Ode45Donnees250
+plot(t,rad2deg(z(:,5)))
+xlabel('Temps')
+ylabel('Theta')
+
+figure
+plot(z(:,3),z(:,1))
+xlabel('Hauteur')
+ylabel('Vitesse')
+
+
+save Ode250A 
+
+

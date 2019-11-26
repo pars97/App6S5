@@ -26,33 +26,30 @@ B            = S_c*C_do/M_c;        % Paramètre Balistique constant (m^2/kg)
 
 %%
 Rho = Rho_0*exp(-VE(3)/H_s);
-Rho_dyn = 1/2*Rho*VE(1)^2;
-alpha = VE(5)-VE(2);
-Daero = Rho_dyn*S_c*C_do;
-Laero = Rho_dyn*S_c*C_Lalpha*alpha;
+
 r = R_mars + VE(3);
-gr = Mu_mars/r^2;
 
-DVA = V_FinM2 - sqrt(VE(1)^2+2*Mu_mars*(1/(R_mars+H_FinM)-1/r));
+r_fin = R_mars + H_FinM;
 
-Gamma_ref = asin(1/2*B*H_s*(Rho_0*exp(-H_FinM/H_s)-Rho)/log(1+DVA/VE(1)));
+gr = Mu_mars/(r.^2);
 
-Kp_gamma =5;
+alpha = VE(5)-VE(2);
 
+Rho_fin = Rho_0*exp(-H_FinM/H_s);
 
-f_gamma = 1/VE(1)*(Rho_dyn*S_c*C_Lalpha/M_c*VE(2)+(VE(1)^2/r-gr)*cos(VE(2)));
-g_gamma = Rho_dyn*S_c*C_Lalpha/VE(1)/M_c;
+P_dyn = 1/2*Rho*(VE(1).^2);
 
-theta_cmd = -f_gamma/g_gamma+Kp_gamma/g_gamma*(Gamma_ref-VE(2));
+DVA = V_FinM1 - sqrt(VE(1)^2 + ((2*Mu_mars)*((1/r_fin - 1/r))));
 
-f_theta = Rho_dyn*S_c*d_c/J_c*(C_Malpha+d_c/2/VE(1)*C_Mq*VE(6));
-g_theta = Rho_dyn*S_c*d_c/J_c*C_Mdelta;
+Gamma_ref = asin((1/2)*B*H_s*((Rho_fin - Rho) ./ log(1 + DVA/VE(1))));
 
-Kp_theta = 400;
-Kd_theta = 28;
+g_gamma = (P_dyn*S_c*C_Lalpha)/(VE(1)*M_c);
 
-delta_cmd = -f_theta/g_theta+Kp_theta/g_theta*(theta_cmd-VE(5))+Kd_theta/g_theta*(-VE(6));
+Kp_gamma = 5;
 
+theta_eq = VE(2) - (cos(VE(2)) * M_c) / (P_dyn*S_c*C_Lalpha) * (VE(1)^2/r - Mu_mars / r^2);
+        
+theta_cmd = theta_eq + Kp_gamma/g_gamma * (Gamma_ref - VE(2));
 
 if theta_cmd>Theta_cmdLim
     theta_cmd = Theta_cmdLim;
@@ -61,16 +58,34 @@ if theta_cmd<(-Theta_cmdLim)
     theta_cmd=-Theta_cmdLim;
 end
 
- 
+Daero = P_dyn*S_c*C_do;
 
-Maero = Rho_dyn*S_c*d_c*(C_Malpha*alpha+d_c/2/VE(1)*C_Mq+C_Mdelta*delta_cmd);
+Laero = P_dyn*S_c*C_Lalpha*alpha;
+
+f_theta = (P_dyn*S_c*d_c/J_c)*(C_Malpha*alpha + d_c/(2*VE(1))*C_Mq*VE(6));
+
+g_theta = (P_dyn*S_c*d_c/J_c)*C_Mdelta;
+
+Kp_theta = 400;
+
+Kd_theta = 28;
+
+delta_cmd = -f_theta/g_theta + Kp_theta/g_theta*(theta_cmd-VE(5)) + Kd_theta/g_theta*(0-VE(6));
+
+Maero = P_dyn*S_c*d_c*(C_Malpha*alpha + d_c/(2*VE(1))*C_Mq*VE(6) + C_Mdelta*delta_cmd);
 
 f(1) = -Daero/M_c-gr*sin(VE(2));
-f(2) = 1/VE(1)*(Laero/M_c+(VE(1)^2/r-gr)*cos(VE(2)));
+
+f(2) = 1/VE(1)*(Laero/M_c + (VE(1).^2/r-gr)*cos(VE(2)));
+
 f(3) = VE(1)*sin(VE(2));
+
 f(4) = VE(1)/r*cos(VE(2));
+
 f(5) = VE(6);
+
 f(6) = 1/J_c*Maero;
+
   f = f(:);
 
 
