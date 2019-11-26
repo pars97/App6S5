@@ -122,25 +122,25 @@ RMS_acc_abs = sqrt(1/N*sum(((acc_mes-Acc_approx)).^2));
 
 RMS_acc_rel = sqrt(1/N*sum(((acc_mes-Acc_approx)./acc_mes).^2));
 
-% %Graph accel
-% figure()
-% hold on
-% title('Accélération en fonction de la hauteur')
-% plot(H_Mes_Trap_Vec,Acc_approx)
-% plot(H_Mes_Trap_Vec,acc_mes,'p','color','red')
-% xlabel('Hauteur en m')
-% ylabel('Accélération en m/s^2')
-% legend('Russe','RAA')
-% 
-% %Graph Vitesses
-% figure()
-% hold on
-% title('Vitesse en fonction de la hauteur')
-% plot(H_Mes_Trap_Vec,V_approx)
-% plot(H_Mes_Trap_Vec,V_Mes_Trap_Vec,'p','color','red')
-% xlabel('Hauteur en m')
-% ylabel('Vitesse en m/s')
-% legend('Russe','RAA')
+%Graph accel
+figure()
+hold on
+title('Accélération en fonction de la hauteur')
+plot(H_Mes_Trap_Vec,Acc_approx)
+plot(H_Mes_Trap_Vec,acc_mes,'p','color','red')
+xlabel('Hauteur en m')
+ylabel('Accélération en m/s^2')
+legend('Russe','RAA')
+
+%Graph Vitesses
+figure()
+hold on
+title('Vitesse en fonction de la hauteur')
+plot(H_Mes_Trap_Vec,V_approx)
+plot(H_Mes_Trap_Vec,V_Mes_Trap_Vec,'p','color','red')
+xlabel('Hauteur en m')
+ylabel('Vitesse en m/s')
+legend('Russe','RAA')
 
 
 %% Loi de guidage
@@ -233,7 +233,7 @@ end
 
 
 
-%% DT
+%%
 
 
 Rho_min_300 = Rho_0*exp(-hmin_300/H_s);
@@ -252,22 +252,22 @@ V_moy300 = 1/2*(V_min300+V_max300);
 V_moy250 = 1/2*(V_min250+V_max250);
 
 
-DT_300 = (hmin_300-hmax_300)/sin(Gamma_ref300)/V_moy300;
-DT_250 = (hmin_250-hmax_250)/sin(Gamma_ref250)/V_moy250;
+DT_300 = (hmin_300-hmax_300)/sin(Gamma_ref300)/V_moy300
+DT_250 = (hmin_250-hmax_250)/sin(Gamma_ref250)/V_moy250
 
-% figure()
-% hold on
-% plot(H,Daero_gamma300)
-% xline(hmin_300,':','color','red');
-% xline(hmax_300,':','color','red');
-% yline(2000,':','color','red');
-% 
-% figure()
-% hold on
-% plot(H,Daero_gamma250)
-% xline(hmin_250,':','color','red');
-% xline(hmax_250,':','color','red');
-% yline(2000,':','color','red');
+figure()
+hold on
+plot(H,Daero_gamma300)
+xline(hmin_300,':','color','red');
+xline(hmax_300,':','color','red');
+yline(2000,':','color','red');
+
+figure()
+hold on
+plot(H,Daero_gamma250)
+xline(hmin_250,':','color','red');
+xline(hmax_250,':','color','red');
+yline(2000,':','color','red');
 
 
 disp('end')

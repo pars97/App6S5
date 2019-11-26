@@ -39,6 +39,8 @@ Gamma_ref = asin(1/2*B*H_s*(Rho_0*exp(-H_FinM/H_s)-Rho)/log(1+DVA/VE(1)));
 
 Kp_gamma =5;
 
+Laero = Rho_dyn*S_c*C_Lalpha*(VE(2)-VE(5));
+
 f_gamma = 1/VE(1)*(Rho_dyn*S_c*C_Lalpha/M_c*VE(2)+(VE(1)^2/r-gr)*cos(VE(2)));
 g_gamma = Rho_dyn*S_c*C_Lalpha/VE(1)/M_c;
 
@@ -50,14 +52,9 @@ g_theta = Rho_dyn*S_c*d_c/J_c*C_Mdelta;
 Kp_theta = 400;
 Kd_theta = 28;
 
-%theta_cmd = -f_theta/g_theta+Kp_theta/g_theta*(theta_des-VE(5))+Kd_theta/g_theta*(-VE(6));
-theta_cmd = 0
-if theta_cmd>Theta_cmdLim
-    theta_cmd = Theta_cmdLim;
-end
-if theta_cmd<(-Theta_cmdLim)
-    theta_cmd=-Theta_cmdLim;
-end
+theta_cmd = -f_theta/g_theta+Kp_theta/g_theta*(theta_des-VE(5))+Kd_theta/g_theta*(-VE(6));
+%theta_cmd = 0
+if 
 
 Maero = Rho_dyn*S_c*d_c*(C_Malpha*alpha+d_c/2/VE(1)*C_Mq+C_Mdelta*theta_cmd);
 
@@ -68,5 +65,10 @@ f(4) = VE(1)/r*cos(VE(2));
 f(5) = VE(6);
 f(6) = 1/J_c*Maero;
   f = f(:);
+
+
+
+
+
 
 
