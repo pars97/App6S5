@@ -40,11 +40,13 @@ end
 
 
 
-% figure()
+figure()
 % plot (Temps(1:2:end),V_Mes_Simp_Vec)
 % hold on
-% plot(Temps,V_Mes_Trap_Vec);
-% title('Vitesse en fonction du temps selon différente approximation')
+plot(Temps,V_Mes_Trap_Vec);
+title('Vitesse en fonction du temps selon trapèze')
+xlabel('Temps(s)')
+ylabel('Vitesse (m/s)')
 % legend('Simpson','Trapèze')
 % La méthode des trapèze est sélectionnée car sont erreure est plus petite
 
@@ -80,11 +82,13 @@ for n=3:2:length(Temps)
 end
 
 
-% figure()
+figure()
 % plot (Temps(1:2:end),H_Mes_Simp_Aff)
 % hold on
-% plot(Temps,H_Mes_Trap_Vec);
-% % title('Hauteur en fonction du temps selon différente approximation')
+plot(Temps,H_Mes_Trap_Vec);
+title('Hauteur en fonction du temps selon trapèze')
+xlabel('Temps(s)')
+ylabel('Hauteur (m)')
 % legend('Simpson','Trapèze')
 % La méthode des trapèzes est sélectionnée car sont erreure est plus petite
 

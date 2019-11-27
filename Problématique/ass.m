@@ -39,7 +39,7 @@ Rho_fin = Rho_0*exp(-H_FinM/H_s);
 
 P_dyn = 1/2*Rho*(VE(1).^2);
 
-DVA = V_FinM1 - sqrt(VE(1)^2 + ((2*Mu_mars)*((1/r_fin - 1/r))));
+DVA = V_FinM2 - sqrt(VE(1)^2 + ((2*Mu_mars)*((1/r_fin - 1/r))));
 
 Gamma_ref = asin((1/2)*B*H_s*((Rho_fin - Rho) ./ log(1 + DVA/VE(1))));
 
@@ -70,7 +70,8 @@ Kp_theta = 400;
 
 Kd_theta = 28;
 
-delta_cmd = -f_theta/g_theta + Kp_theta/g_theta*(theta_cmd-VE(5)) + Kd_theta/g_theta*(0-VE(6));
+% delta_cmd = -f_theta/g_theta + Kp_theta/g_theta*(theta_cmd-VE(5)) + Kd_theta/g_theta*(0-VE(6));
+delta_cmd = 0;
 
 Maero = P_dyn*S_c*d_c*(C_Malpha*alpha + d_c/(2*VE(1))*C_Mq*VE(6) + C_Mdelta*delta_cmd);
 
@@ -86,6 +87,7 @@ f(5) = VE(6);
 
 f(6) = 1/J_c*Maero;
 
+f(7) = Daero >= 2000;
   f = f(:);
 
 
